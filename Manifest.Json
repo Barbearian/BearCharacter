@@ -1,0 +1,5 @@
+{
+    "dependencies": {
+        "com.oozingbear.bearframework":"https://github.com/Barbearian/BearFramework.git"
+    }
+}
