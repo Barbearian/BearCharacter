@@ -14,14 +14,13 @@ namespace Bear
                     
                     //Make Avatar 
                     var avatarAnim = await MakeAnimatorNode(6,"Speed","MotionSpeed");
+                    
                     nanv.Link(avatarAnim);
-
                     //link input to play animation
-                    inputgameobj.Link(nanv,avatarAnim);
+                    inputgameobj.Link(avatarAnim);
 
                     //Make Camera
                     var camNode = await MakeLocalLookatCamera();
-                    
                     camNode.Link(avatarAnim);
 
                     return nanv.gameObject;   
@@ -177,18 +176,21 @@ namespace Bear
             kid.localRotation = Quaternion.identity;
         }
 
-        public static void Link(this InputNodeView view, INode unit,AnimatorNodeView anim){
-            if(unit.TryGetNodeData<NaiveStateMachineNodeData>(out var sm)){
-                for(int i = 1;i<=2;i++){
-                    var key = "UI/UIShortCut"+i;
-                    var num = i-1;
-                    view.buttonInputData.Register(key,(x)=>{
-                        anim.Play(num);
-                        sm.EnterState("PlayStandingGesture");
-                    });
-                }   
-                
+        public static void Link(this InputNodeView view,AnimatorNodeView anim){
+            if(view.TryGetParentNode(out var unit)){
+                if(unit.TryGetNodeData<NaiveStateMachineNodeData>(out var sm)){
+                    for(int i = 1;i<=2;i++){
+                        var key = "UI/UIShortCut"+i;
+                        var num = i-1;
+                        view.buttonInputData.Register(key,(x)=>{
+                            anim.Play(num);
+                            sm.EnterState("PlayStandingGesture");
+                        });
+                    }   
+                    
+                }
             }
+
            
            
         }

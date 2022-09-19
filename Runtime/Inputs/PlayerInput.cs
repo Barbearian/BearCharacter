@@ -29,12 +29,12 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
             ""actions"": [
                 {
                     ""name"": ""MoveDir"",
-                    ""type"": ""PassThrough"",
+                    ""type"": ""Value"",
                     ""id"": ""18aed459-b1aa-4ecd-b643-17d1dce82339"",
                     ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": false
+                    ""initialStateCheck"": true
                 },
                 {
                     ""name"": ""ClickOnTarget"",
@@ -474,7 +474,7 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                     ""name"": ""CameraXY"",
                     ""type"": ""Value"",
                     ""id"": ""3c4ed53f-97c0-4fb8-886c-279af5310976"",
-                    ""expectedControlType"": ""Axis"",
+                    ""expectedControlType"": ""Vector2"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true

@@ -8,7 +8,7 @@ namespace Bear
     {
         public SafeDelegate<Vector2> inputtarget = new SafeDelegate<Vector2>(); 
         public InputAssociateNodeData buttonInputData = new InputAssociateNodeData();
-        public void Update()
+        public void LateUpdate()
         {
             
             inputtarget.invoker?.Invoke(InputHelper.GetMoveDir());

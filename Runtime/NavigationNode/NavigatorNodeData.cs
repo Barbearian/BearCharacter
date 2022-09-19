@@ -15,6 +15,9 @@ namespace Bear
         public Action<Vector3> DMove;
 
         public Action<Vector3> DRotate;
+
+        public Vector3 MoveDir;
+        public Vector3 RotateDir;
     }
 
     public interface IReceiveNavigationTarget{

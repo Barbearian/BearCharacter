@@ -30,9 +30,10 @@ namespace Bear
 
         public void Init(NavMeshAgent agent){
             this.agent = agent;
-            directionalInputNode.DMove += this.Move;
-            directionalInputNode.DRotate += this.Rotate;
-
+            // directionalInputNode.DMove += this.Move;
+            // directionalInputNode.DRotate += this.Rotate;
+            directionalInputNode.DMove += (dir)=>{directionalInputNode.RotateDir = dir;};
+            directionalInputNode.DRotate += (dir)=>{directionalInputNode.MoveDir = dir;};
             pointInputNode.DMoveTo += this.MoveTo;
         }
 
@@ -41,6 +42,9 @@ namespace Bear
             this.SnapTurn();
             this.CheckSpeed();
             this.NotifySpeed();
+
+            this.Move(directionalInputNode.MoveDir);
+            this.Rotate(directionalInputNode.RotateDir);
         }
 
     }
@@ -118,8 +122,13 @@ namespace Bear
                 view.movementData.dir = agent.velocity;
             }
 
+            if(hasInput){
+                var velocity = move * Time.deltaTime;
+                agent.velocity = velocity;
+                agent.Move(velocity);
+                
+            }
             
-            agent.Move(move * Time.deltaTime);
         }
 
         public static void Rotate(this NavimeshAgentNodeView view, Vector3 faceDir){
