@@ -6,7 +6,6 @@ namespace Bear{
     {
         public Animator anim;
         public System.Action<PlayAnimationClipInfo> DOnPlayedAnimation;
-
         public AnimationClipNodeData clipData;
         
     }
@@ -32,6 +31,10 @@ namespace Bear{
         public static void Play(this AnimatorNodeView view, PlayAnimationClipInfo info){
             view.anim.Play(info.clipName,info.layer,info.mixedTime);
             view.DOnPlayedAnimation?.Invoke(info);
+        }
+
+        public static void SetFloat(this AnimatorNodeView view,string floatName,float value){
+            view.anim.SetFloat(floatName,value);
         }
     }
 

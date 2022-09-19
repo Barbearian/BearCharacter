@@ -13,11 +13,8 @@ namespace Bear
                 if(nanv.TryGetKidNode<InputNodeView>(out var inputgameobj)){
                     
                     //Make Avatar 
-                    var avatarPref = await loader.LoadAsync<GameObject>("PlayerAvatar");
-                    var avatarAnim = GameObject.Instantiate(avatarPref).GetComponent<AnimatorNodeView>();
+                    var avatarAnim = await MakeAnimatorNode(6,"Speed","MotionSpeed");
                     nanv.Link(avatarAnim);
-
-                    
 
                     //link input to play animation
                     inputgameobj.Link(nanv,avatarAnim);
@@ -25,12 +22,9 @@ namespace Bear
                     //Make Camera
                     var camNode = await MakeLocalLookatCamera();
                     
-                    
                     camNode.Link(avatarAnim);
 
                     return nanv.gameObject;   
-
-                    
                 }
                 
             }
@@ -43,13 +37,9 @@ namespace Bear
             if(INodeSystem.GlobalNode.TryGetNodeData<ResourceLoaderNodeData>(out var loader)){
                 NavimeshAgentNodeView nanv = await MakePlayerController();
 
-                
-                         
                 //Make input
                 var inputgameobj = new GameObject("InputNodeView").AddComponent<InputNodeView>();
                 inputgameobj.Link(nanv);
-
-
 
                 return nanv;
             }
@@ -93,7 +83,24 @@ namespace Bear
         }
 
         
-    
+        public static async UniTask<AnimatorNodeView> MakeAnimatorNode(int maxSpeedBlend,string SpeedAttribute,string SpeedMultiAttribute){
+            if(INodeSystem.GlobalNode.TryGetNodeData<ResourceLoaderNodeData>(out var loader)){
+                var avatarPref = await loader.LoadAsync<GameObject>("PlayerAvatar");
+                var avatarAnim = GameObject.Instantiate(avatarPref).GetComponent<AnimatorNodeView>();
+
+                avatarAnim.AddNodeData(new AnimatorMovementSpeedInputStreamReceiverNodeData(){
+                    maxSpeedBlend = maxSpeedBlend,
+                    SpeedAttribute = SpeedAttribute,
+                    SpeedMultiAttribute = SpeedMultiAttribute
+                });
+
+                
+                return avatarAnim;
+            }
+
+            return null;
+
+        }
 
         private static void Link(this CinemachineVirtualCameraNodeView view, NodeView target){
             var anchor = new GameObject("CameraAnchor").AddNodeView<CameraAnchorNodeView>();
@@ -140,17 +147,9 @@ namespace Bear
 
         private static void Link(this NavimeshAgentNodeView nanv,AnimatorNodeView anim){
             nanv.transform.AddChildrenAtZero(anim.transform);
-
-            nanv.movementObserver.DOnMove+=(speed)=>{
-                float multi = 1;
-                if(speed>=6){
-                    speed = 6;
-                    multi = speed/6;
-                }
-                anim.anim.SetFloat("Speed",speed);
-                anim.anim.SetFloat("MotionSpeed",multi);
-            };
-
+            if(anim.TryGetNodeData<AnimatorMovementSpeedInputStreamReceiverNodeData>(out var receiver)){
+                nanv.movementObserver.DOnMove += (speed)=>{receiver.UpdateSpeedAndMulti(speed);};
+            }
 
             //Add state to statemachine
             if(nanv.TryGetNodeData<NaiveStateMachineNodeData>(out var naiveStateMachineNodeData)){
@@ -164,7 +163,7 @@ namespace Bear
                 //When Start Moving Stop Animation
                 state = naiveStateMachineNodeData.GetOrCreateNaiveState("Moving");
                 state.DOnEnterState+=()=>{
-                    anim.StopPlayGesture();
+                    anim.EnterDefaultState();
                 };
             }
         
