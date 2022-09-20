@@ -5,38 +5,37 @@ using UnityEngine;
 
 namespace Bear{
     public class AnimatorMovementSpeedInputStreamReceiverNodeData:INodeData,IAnimatorMovementSpeedInputStreamReceiver,IOnAttachedToNode{
+        
+
         public float maxSpeedBlend;
         public string SpeedAttribute;
         public string SpeedMultiAttribute;
-        private Action<float> DUpdateSpeed;
-        private Action<float> DUpdateSpeedMulti;
+        public SafeDelegate<float> DUpdateSpeed;
+        public SafeDelegate<float> DUpdateSpeedMulti;
 
         public float MaxSpeedBlend => maxSpeedBlend;
 
+        public Dictionary<AnimatorNodeView,System.Action> links = new Dictionary<AnimatorNodeView, Action>();
         public void OnInputStreamLinked(IInputStreamSender receiver){}
 
         public void Attached(INode node){
             if(node is AnimatorNodeView nodeview){
-                DUpdateSpeed = (x)=>{
-                    nodeview.SetFloat(SpeedAttribute,x);
-                };
-
-                DUpdateSpeedMulti = (x)=>{
-                    nodeview.SetFloat(SpeedMultiAttribute,x);
-                };
+                this.Link(nodeview);
             }
         }
 
         public void UpdateSpeed(float speed)
         {
-            DUpdateSpeed?.Invoke(speed);
+            DUpdateSpeed.invoker?.Invoke(speed);
+           // DUpdateSpeed?.Invoke(speed);
         }
 
         public void UpdateSpeedMulti(float speedMulti)
         {
-            DUpdateSpeedMulti?.Invoke(speedMulti);
+            DUpdateSpeedMulti.invoker?.Invoke(speedMulti);
         }
     }
+
 
     public interface IAnimatorMovementSpeedInputStreamReceiver{
         float MaxSpeedBlend{get;}
@@ -55,5 +54,37 @@ namespace Bear{
             receiver.UpdateSpeed(speed);
             receiver.UpdateSpeedMulti(multi);
         }
+
+        public static void Link(this AnimatorMovementSpeedInputStreamReceiverNodeData nodedata, AnimatorNodeView view){
+                
+
+                var Delink = nodedata.DUpdateSpeed.Link<float>((x)=>{
+                    view.SetFloat(nodedata.SpeedAttribute,x);
+                });
+                 
+                Delink+=nodedata.DUpdateSpeedMulti.Link<float>((x)=>{
+                    view.SetFloat(nodedata.SpeedMultiAttribute,x);
+                });
+
+                nodedata.Release(view);
+                nodedata.links[view] = Delink;
+        }
+
+        public static void Release(this AnimatorMovementSpeedInputStreamReceiverNodeData nodedata, AnimatorNodeView view){
+            if(nodedata.links.TryGetValue(view,out var Delink)){
+                try{
+                    Delink.Invoke();
+                }catch(Exception e){
+                    Debug.LogWarning(e);
+                }
+                
+                nodedata.links.Remove(view);
+            }
+
+        }        
+
+
+
+       
     }
 }
