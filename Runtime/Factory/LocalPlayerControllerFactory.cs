@@ -145,7 +145,8 @@ namespace Bear
         
 
         private static void Link(this NavimeshAgentNodeView nanv,AnimatorNodeView anim){
-            nanv.transform.AddChildrenAtZero(anim.transform);
+           // nanv.transform.AddChildrenAtZero(anim.transform);
+            nanv.AddNodeViewChild(anim);
             if(anim.TryGetNodeData<AnimatorMovementSpeedInputStreamReceiverNodeData>(out var receiver)){
                 nanv.movementObserver.DOnMove += (speed)=>{receiver.UpdateSpeedAndMulti(speed);};
             }
