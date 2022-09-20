@@ -6,7 +6,7 @@ namespace Bear
 {
     public static class LocalPlayerControllerFactory
     {
-        public static async UniTask<GameObject> MakeLocalPlayer() {
+        public static async UniTask<NodeView> MakeLocalPlayer() {
             if(INodeSystem.GlobalNode.TryGetNodeData<ResourceLoaderNodeData>(out var loader)){
 
                 var nanv = await MakeControllablePlayer();
@@ -23,7 +23,7 @@ namespace Bear
                     var camNode = await MakeLocalLookatCamera();
                     camNode.Link(avatarAnim);
 
-                    return nanv.gameObject;   
+                    return nanv;   
                 }
                 
             }
