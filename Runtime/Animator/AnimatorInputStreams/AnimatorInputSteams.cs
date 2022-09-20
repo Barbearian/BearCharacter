@@ -10,8 +10,8 @@ namespace Bear{
         public float maxSpeedBlend;
         public string SpeedAttribute;
         public string SpeedMultiAttribute;
-        public SafeDelegate<float> DUpdateSpeed;
-        public SafeDelegate<float> DUpdateSpeedMulti;
+        public SafeDelegate<float> DUpdateSpeed = new SafeDelegate<float>();
+        public SafeDelegate<float> DUpdateSpeedMulti = new SafeDelegate<float>();
 
         public float MaxSpeedBlend => maxSpeedBlend;
 
@@ -77,7 +77,7 @@ namespace Bear{
                 }catch(Exception e){
                     Debug.LogWarning(e);
                 }
-                
+
                 nodedata.links.Remove(view);
             }
 
