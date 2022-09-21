@@ -2,11 +2,15 @@
 using UnityEngine;
 
 namespace Bear{
-    public class AnimatorNodeView : NodeView
+    public class AnimatorNodeView : NodeView,IAnimatorClipsPlayer
     {
         public Animator anim;
         public System.Action<PlayAnimationClipInfo> DOnPlayedAnimation;
         public AnimationClipNodeData clipData;
+
+        public void Play(int index){
+            AnimatorNodeViewSystem.Play(this,index);
+        }
         
     }
 

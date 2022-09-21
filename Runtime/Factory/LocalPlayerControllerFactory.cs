@@ -177,7 +177,7 @@ namespace Bear
             kid.localRotation = Quaternion.identity;
         }
 
-        public static void Link(this InputNodeView view,AnimatorNodeView anim){
+        public static void Link(this InputNodeView view,IAnimatorClipsPlayer anim){
             if(view.TryGetParentNode(out var unit)){
                 if(unit.TryGetNodeData<NaiveStateMachineNodeData>(out var sm)){
                     for(int i = 1;i<=2;i++){
