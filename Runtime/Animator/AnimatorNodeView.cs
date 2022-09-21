@@ -5,11 +5,14 @@ namespace Bear{
     public class AnimatorNodeView : NodeView,IAnimatorClipsPlayer
     {
         public Animator anim;
-        public System.Action<PlayAnimationClipInfo> DOnPlayedAnimation;
+        public SafeDelegate<PlayAnimationClipInfo> DOnPlayedAnimation = new SafeDelegate<PlayAnimationClipInfo>();
+        public SafeDelegate<int> DOnPlayedIndexed  = new SafeDelegate<int>();
+        public SafeDelegate DOnEnterDefaule = new SafeDelegate();
         public AnimationClipNodeData clipData;
 
         public void Play(int index){
             AnimatorNodeViewSystem.Play(this,index);
+
         }
         
     }
@@ -23,18 +26,20 @@ namespace Bear{
         public static void EnterDefaultState(this AnimatorNodeView view){
             var clip = view.clipData.EntryClip;
             view.Play(clip);
+            view.DOnEnterDefaule.invoker?.Invoke();
         }
 
         public static void Play(this AnimatorNodeView view,int index){
             if(index>=0 && index < view.clipData.defaultClips.Length){
                 var clip = view.clipData.defaultClips[index];
                 view.Play(clip);
+                view.DOnPlayedIndexed.invoker?.Invoke(index);
             }
         }
 
         public static void Play(this AnimatorNodeView view, PlayAnimationClipInfo info){
             view.anim.Play(info.clipName,info.layer,info.mixedTime);
-            view.DOnPlayedAnimation?.Invoke(info);
+            view.DOnPlayedAnimation.invoker?.Invoke(info);
         }
 
         public static void SetFloat(this AnimatorNodeView view,string floatName,float value){
