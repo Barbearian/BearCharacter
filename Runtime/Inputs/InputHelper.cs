@@ -7,8 +7,8 @@ namespace Bear
 {
     public class InputHelper
     {
-        private static PlayerInput pInput;
-
+        public static PlayerInput pInput;
+        public Vector2 dir;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         public static void Init()

@@ -22,24 +22,6 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
-                },
-                {
-                    "name": "Zoom",
-                    "type": "Value",
-                    "id": "94b99d19-cfc3-4532-8059-42248672b46a",
-                    "expectedControlType": "Axis",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
-                    "name": "DoubleClick",
-                    "type": "Button",
-                    "id": "18b6ad29-008b-4c04-ae58-aa91b1dc86d3",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -161,28 +143,6 @@
                     "processors": "",
                     "groups": "",
                     "action": "ClickOnTarget",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "c6884ac4-f729-45f7-b3b1-a29a61b248e8",
-                    "path": "<Mouse>/scroll/y",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Zoom",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "020a81ec-9340-4a2c-99b0-d1cabc57d149",
-                    "path": "<Mouse>/leftButton",
-                    "interactions": "MultiTap",
-                    "processors": "",
-                    "groups": "",
-                    "action": "DoubleClick",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

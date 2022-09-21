@@ -2,16 +2,40 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static PlayerInput;
+
 namespace Bear
 {
-    public class InputNodeView : NodeView
+    public class InputNodeView : NodeView,IPlayerActions
     {
         public SafeDelegate<Vector2> inputtarget = new SafeDelegate<Vector2>(); 
         public InputAssociateNodeData buttonInputData = new InputAssociateNodeData();
-        public void LateUpdate()
+
+        public Vector2 dir;
+        private void OnEnable() {
+            InputHelper.pInput.Player.SetCallbacks(this);
+        }
+
+        public void OnClickOnTarget(InputAction.CallbackContext context)
+        {}
+
+        public void OnDoubleClick(InputAction.CallbackContext context)
+        {}
+
+        public void OnMoveDir(InputAction.CallbackContext context)
         {
+            if(context.phase == InputActionPhase.Performed){
+                dir = context.ReadValue<Vector2>();
+            }
             
-            inputtarget.invoker?.Invoke(InputHelper.GetMoveDir());
+            if(context.phase == InputActionPhase.Canceled){
+                dir = Vector2.zero;
+            }
+            
+        }
+
+        private void Update() {
+            inputtarget.invoker?.Invoke(dir);
         }
 
         private void OnDestroy() {

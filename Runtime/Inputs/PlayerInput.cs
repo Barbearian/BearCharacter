@@ -44,24 +44,6 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Zoom"",
-                    ""type"": ""Value"",
-                    ""id"": ""94b99d19-cfc3-4532-8059-42248672b46a"",
-                    ""expectedControlType"": ""Axis"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
-                },
-                {
-                    ""name"": ""DoubleClick"",
-                    ""type"": ""Button"",
-                    ""id"": ""18b6ad29-008b-4c04-ae58-aa91b1dc86d3"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -183,28 +165,6 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""ClickOnTarget"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""c6884ac4-f729-45f7-b3b1-a29a61b248e8"",
-                    ""path"": ""<Mouse>/scroll/y"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Zoom"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""020a81ec-9340-4a2c-99b0-d1cabc57d149"",
-                    ""path"": ""<Mouse>/leftButton"",
-                    ""interactions"": ""MultiTap"",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""DoubleClick"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -543,8 +503,6 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_MoveDir = m_Player.FindAction("MoveDir", throwIfNotFound: true);
         m_Player_ClickOnTarget = m_Player.FindAction("ClickOnTarget", throwIfNotFound: true);
-        m_Player_Zoom = m_Player.FindAction("Zoom", throwIfNotFound: true);
-        m_Player_DoubleClick = m_Player.FindAction("DoubleClick", throwIfNotFound: true);
         // ShortCut
         m_ShortCut = asset.FindActionMap("ShortCut", throwIfNotFound: true);
         m_ShortCut_ShortCut1 = m_ShortCut.FindAction("ShortCut1", throwIfNotFound: true);
@@ -626,16 +584,12 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
     private IPlayerActions m_PlayerActionsCallbackInterface;
     private readonly InputAction m_Player_MoveDir;
     private readonly InputAction m_Player_ClickOnTarget;
-    private readonly InputAction m_Player_Zoom;
-    private readonly InputAction m_Player_DoubleClick;
     public struct PlayerActions
     {
         private @PlayerInput m_Wrapper;
         public PlayerActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
         public InputAction @MoveDir => m_Wrapper.m_Player_MoveDir;
         public InputAction @ClickOnTarget => m_Wrapper.m_Player_ClickOnTarget;
-        public InputAction @Zoom => m_Wrapper.m_Player_Zoom;
-        public InputAction @DoubleClick => m_Wrapper.m_Player_DoubleClick;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -651,12 +605,6 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                 @ClickOnTarget.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnClickOnTarget;
                 @ClickOnTarget.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnClickOnTarget;
                 @ClickOnTarget.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnClickOnTarget;
-                @Zoom.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnZoom;
-                @Zoom.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnZoom;
-                @Zoom.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnZoom;
-                @DoubleClick.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDoubleClick;
-                @DoubleClick.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDoubleClick;
-                @DoubleClick.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDoubleClick;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -667,12 +615,6 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                 @ClickOnTarget.started += instance.OnClickOnTarget;
                 @ClickOnTarget.performed += instance.OnClickOnTarget;
                 @ClickOnTarget.canceled += instance.OnClickOnTarget;
-                @Zoom.started += instance.OnZoom;
-                @Zoom.performed += instance.OnZoom;
-                @Zoom.canceled += instance.OnZoom;
-                @DoubleClick.started += instance.OnDoubleClick;
-                @DoubleClick.performed += instance.OnDoubleClick;
-                @DoubleClick.canceled += instance.OnDoubleClick;
             }
         }
     }
@@ -868,8 +810,6 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
     {
         void OnMoveDir(InputAction.CallbackContext context);
         void OnClickOnTarget(InputAction.CallbackContext context);
-        void OnZoom(InputAction.CallbackContext context);
-        void OnDoubleClick(InputAction.CallbackContext context);
     }
     public interface IShortCutActions
     {
