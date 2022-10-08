@@ -15,11 +15,11 @@ namespace Bear{
 
         public float MaxSpeedBlend => maxSpeedBlend;
 
-        public Dictionary<AnimatorNodeView,System.Action> links = new Dictionary<AnimatorNodeView, Action>();
+        public Dictionary<IAnimatorNode,System.Action> links = new Dictionary<IAnimatorNode, Action>();
         public void OnInputStreamLinked(IInputStreamSender receiver){}
 
         public void Attached(INode node){
-            if(node is AnimatorNodeView nodeview){
+            if(node is IAnimatorNode nodeview){
                 this.Link(nodeview);
             }
         }
@@ -55,7 +55,7 @@ namespace Bear{
             receiver.UpdateSpeedMulti(multi);
         }
 
-        public static void Link(this AnimatorMovementSpeedInputStreamReceiverNodeData nodedata, AnimatorNodeView view){
+        public static void Link(this AnimatorMovementSpeedInputStreamReceiverNodeData nodedata, IAnimatorNode view){
                 
 
                 var Delink = nodedata.DUpdateSpeed.Link<float>((x)=>{
@@ -70,7 +70,7 @@ namespace Bear{
                 nodedata.links[view] = Delink;
         }
 
-        public static void Release(this AnimatorMovementSpeedInputStreamReceiverNodeData nodedata, AnimatorNodeView view){
+        public static void Release(this AnimatorMovementSpeedInputStreamReceiverNodeData nodedata, IAnimatorNode view){
             if(nodedata.links.TryGetValue(view,out var Delink)){
                 try{
                     Delink.Invoke();

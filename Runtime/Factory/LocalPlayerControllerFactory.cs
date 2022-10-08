@@ -6,22 +6,29 @@ namespace Bear
 {
     public static class LocalPlayerControllerFactory
     {
-        public static async UniTask<NodeView> MakeLocalPlayer() {
+        public static async UniTask<GameObject> Make(string key){
+            if(INodeSystem.GlobalNode.TryGetNodeData<ResourceLoaderNodeData>(out var loader)){
+
+                var pref = await loader.LoadAsync<GameObject>(key);
+                return GameObject.Instantiate(pref);
+                
+                
+            }
+            return null;
+        }
+
+        public static async UniTask<NodeView> MakeLocalPlayer(GameObject avatarPref = null) {
             if(INodeSystem.GlobalNode.TryGetNodeData<ResourceLoaderNodeData>(out var loader)){
 
                 var nanv = await MakeControllablePlayer();
                 if(nanv.TryGetKidNode<InputNodeView>(out var inputgameobj)){
                     
                     //Make Avatar 
-                    var avatarAnim = await MakeAnimatorNode(6,"Speed","MotionSpeed");
-                    
+                    var avatarAnim = await MakeAnimatorNode(6,"Speed","MotionSpeed",avatarPref);
                     nanv.Link(avatarAnim);
+
                     //link input to play animation
                     inputgameobj.Link(avatarAnim);
-
-                    //Make Camera
-                    var camNode = await MakeLocalLookatCamera();
-                    camNode.Link(avatarAnim);
 
                     return nanv;   
                 }
@@ -31,6 +38,8 @@ namespace Bear
             
 
         }
+
+        
 
         public static async UniTask<NavimeshAgentNodeView> MakeControllablePlayer(){
             if(INodeSystem.GlobalNode.TryGetNodeData<ResourceLoaderNodeData>(out var loader)){
@@ -57,6 +66,14 @@ namespace Bear
                                
                 nanv.AddNodeData(naivesm);
 
+                //stop moving when play guesture
+                var state = naivesm.GetOrCreateNaiveState("PlayStandingGesture");
+                state.DOnEnterState+=()=>{
+                    nanv.Stop();
+                    Debug.Log("I tried to let player stop");
+                };
+
+
                 //Trigger when move
                 nanv.movementObserver.DOnStartMove += ()=>{naivesm.EnterState("Moving");};
 
@@ -82,10 +99,17 @@ namespace Bear
         }
 
         
-        public static async UniTask<AnimatorNodeView> MakeAnimatorNode(int maxSpeedBlend,string SpeedAttribute,string SpeedMultiAttribute){
+        public static async UniTask<AnimatorNodeView> MakeAnimatorNode(int maxSpeedBlend,string SpeedAttribute,string SpeedMultiAttribute,GameObject avatarPref = null){
             if(INodeSystem.GlobalNode.TryGetNodeData<ResourceLoaderNodeData>(out var loader)){
-                var avatarPref = await loader.LoadAsync<GameObject>("PlayerAvatar");
-                var avatarAnim = GameObject.Instantiate(avatarPref).GetComponent<AnimatorNodeView>();
+                AnimatorNodeView avatarAnim;
+                if(avatarPref == null){
+                    avatarPref = await loader.LoadAsync<GameObject>("PlayerAvatar");
+                    avatarAnim = GameObject.Instantiate(avatarPref).GetComponent<AnimatorNodeView>();
+                }else{
+                    avatarAnim = avatarPref.GetComponent<AnimatorNodeView>();
+                }
+                 
+                
 
                 avatarAnim.AddNodeData(new AnimatorMovementSpeedInputStreamReceiverNodeData(){
                     maxSpeedBlend = maxSpeedBlend,
@@ -101,7 +125,7 @@ namespace Bear
 
         }
 
-        private static void Link(this CinemachineVirtualCameraNodeView view, NodeView target){
+        public static void Link(this CinemachineVirtualCameraNodeView view, NodeView target){
             var anchor = new GameObject("CameraAnchor").AddNodeView<CameraAnchorNodeView>();
             target.AddNodeViewChild(anchor);
             anchor.transform.localPosition = Vector3.up*1.5f;
@@ -137,31 +161,18 @@ namespace Bear
             });
         }
 
-        public static void AddNodeViewChild(this NodeView parent, NodeView kid){
-            parent.AddChildrenNode(kid);
-            parent.transform.AddChildrenAtZero(kid.transform);
-        }
 
-        
-
-        private static void Link(this NavimeshAgentNodeView nanv,AnimatorNodeView anim){
+        private static void Link(this NavimeshAgentNodeView nanv,IAnimatorNode anim){
            // nanv.transform.AddChildrenAtZero(anim.transform);
-            nanv.AddNodeViewChild(anim);
-            if(anim.TryGetNodeData<AnimatorMovementSpeedInputStreamReceiverNodeData>(out var receiver)){
+            
+            if(anim is INode node && node.TryGetNodeData<AnimatorMovementSpeedInputStreamReceiverNodeData>(out var receiver)){
+                nanv.AddNodeOrNodeViewChild(anim);
                 nanv.movementObserver.DOnMove += (speed)=>{receiver.UpdateSpeedAndMulti(speed);};
             }
 
             //Add state to statemachine
             if(nanv.TryGetNodeData<NaiveStateMachineNodeData>(out var naiveStateMachineNodeData)){
-                //When Play Animation stop moving
-                var state = naiveStateMachineNodeData.GetOrCreateNaiveState("PlayStandingGesture");
-                state.DOnEnterState+=()=>{
-                    nanv.Stop();
-                    Debug.Log("I tried to let player stop");
-                };
-
-                //When Start Moving Stop Animation
-                state = naiveStateMachineNodeData.GetOrCreateNaiveState("Moving");
+                var state = naiveStateMachineNodeData.GetOrCreateNaiveState("Moving");
                 state.DOnEnterState+=()=>{
                     anim.EnterDefaultState();
                 };
@@ -169,13 +180,7 @@ namespace Bear
         
         }
 
-        public static void AddChildrenAtZero(this Transform parent, Transform kid){
-            kid.parent = parent;
 
-            //kid.SetParent(parent);
-            kid.localPosition = Vector3.zero;
-            kid.localRotation = Quaternion.identity;
-        }
 
         public static void Link(this InputNodeView view,IAnimatorClipsPlayer anim){
             if(view.TryGetParentNode(out var unit)){
