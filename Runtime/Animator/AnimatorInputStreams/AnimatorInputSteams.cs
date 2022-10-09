@@ -19,8 +19,13 @@ namespace Bear{
         public void OnInputStreamLinked(IInputStreamSender receiver){}
 
         public void Attached(INode node){
-            if(node is IAnimatorNode nodeview){
+            if (node is IAnimatorNode nodeview)
+            {
                 this.Link(nodeview);
+            }
+            else {
+                var animND = node.GetOrCreateNodeData(new AnimatorNodeData());
+                this.Link(animND);
             }
         }
 

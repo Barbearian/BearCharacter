@@ -4,16 +4,15 @@ using UnityEngine;
 using System;
 namespace Bear
 {
-    public struct NavigatorInputNodeData: INodeData
+    public class NavigatorInputNodeData: INodeData
     {
         public Action<Vector3> DMoveTo;
         public Action DOnStop;
 
     }
 
-    public struct DirectionalMovementInputNodeData: INodeData{
+    public class DirectionalMovementInputNodeData: INodeData{
         public Action<Vector3> DMove;
-
         public Action<Vector3> DRotate;
 
         public Vector3 MoveDir;

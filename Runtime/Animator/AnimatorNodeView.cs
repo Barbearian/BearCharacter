@@ -13,7 +13,7 @@ namespace Bear{
     }
 
     [System.Serializable]
-    public class AnimatorNode : IAnimatorNode,INode
+    public class AnimatorNode : IAnimatorNode
     {
         public Animator anim;
         public SafeDelegate<PlayAnimationClipInfo> dOnPlayedAnimation = new SafeDelegate<PlayAnimationClipInfo>();

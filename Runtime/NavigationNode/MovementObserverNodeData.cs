@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 namespace Bear
 {
-    public struct MovementObserverNodeData : INodeData
+    public class MovementObserverNodeData : INodeData
     {
         public Action<float> DOnMove;
         public Action DOnStop;

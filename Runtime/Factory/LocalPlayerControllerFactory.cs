@@ -83,21 +83,6 @@ namespace Bear
             }
         } 
 
-        public static async UniTask<CinemachineVirtualCameraNodeView> MakeLocalLookatCamera(){
-            if(INodeSystem.GlobalNode.TryGetNodeData<ResourceLoaderNodeData>(out var loader)){
-                //Make Camera 
-                var cam = Camera.main;
-                var camview = cam.gameObject.AddNodeView<CameraNodeView>();
-                camview.Init();
-
-                //Make Camera look at player
-                var cnode = await loader.LoadAsync<GameObject>("CinemachineFreeForm");
-                var camNode = GameObject.Instantiate(cnode).GetComponent<CinemachineVirtualCameraNodeView>();
-                return camNode;
-            }
-            return null;
-        }
-
         
         public static async UniTask<AnimatorNodeView> MakeAnimatorNode(int maxSpeedBlend,string SpeedAttribute,string SpeedMultiAttribute,GameObject avatarPref = null){
             if(INodeSystem.GlobalNode.TryGetNodeData<ResourceLoaderNodeData>(out var loader)){
@@ -125,14 +110,7 @@ namespace Bear
 
         }
 
-        public static void Link(this CinemachineVirtualCameraNodeView view, NodeView target){
-            var anchor = new GameObject("CameraAnchor").AddNodeView<CameraAnchorNodeView>();
-            target.AddNodeViewChild(anchor);
-            anchor.transform.localPosition = Vector3.up*1.5f;
 
-            view.dcland.UpdateFollow(anchor.transform);
-            view.dcland.UpdateLookAt(anchor.transform);
-        }
 
         private static void Link(this InputNodeView view, NavimeshAgentNodeView nanv){
             view.LinkMovement(nanv);

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Bear
 {
     [System.Serializable]
-    public struct MovementNodeData : INodeData
+    public class MovementNodeData : INodeData
     {
         public float speedMulti;
         public bool isMoving;
