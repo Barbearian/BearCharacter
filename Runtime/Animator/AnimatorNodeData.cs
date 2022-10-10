@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,7 +19,9 @@ namespace Bear {
         public void Attached(INode node)
         {
             if (node is NodeView view) { 
-                anim = view.GetComponent<Animator>();
+	            anim = view.GetComponent<Animator>();
+                
+	            clipData = view.GetOrCreateNodeData(new AnimationClipNodeData());
             }
         }
 
