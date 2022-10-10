@@ -5,7 +5,7 @@ using UnityEngine;
 namespace  Bear
 {
     [System.Serializable]
-	public struct AnimationClipNodeData:INodeData
+	public class AnimationClipNodeData:INodeData
     {
         public PlayAnimationClipInfo EntryClip;
         public PlayAnimationClipInfo[] defaultClips;
