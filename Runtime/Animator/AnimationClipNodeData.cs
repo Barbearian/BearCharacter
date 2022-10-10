@@ -1,11 +1,11 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace  Bear
 {
     [System.Serializable]
-    public struct AnimationClipNodeData 
+	public struct AnimationClipNodeData:INodeData
     {
         public PlayAnimationClipInfo EntryClip;
         public PlayAnimationClipInfo[] defaultClips;
